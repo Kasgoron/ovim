@@ -1,14 +1,35 @@
 local M = {}
 
+local config = require("ovim.config").options
+
 M.tree_win = nil
 M.editor_win = nil
+
+
+
+function M.update_width()
+
+    local config = require("ovim.config").options
+
+
+    if M.tree_win and vim.api.nvim_win_is_valid(M.tree_win) then
+
+        vim.api.nvim_win_set_width(
+            M.tree_win,
+            config.tree.width
+        )
+
+    end
+
+end
+
+
 
 
 function M.close()
 
     if M.tree_win and vim.api.nvim_win_is_valid(M.tree_win) then
 
-        -- закрываем только если есть другое окно
         if #vim.api.nvim_list_wins() > 1 then
             vim.api.nvim_win_close(M.tree_win, true)
         end
@@ -20,6 +41,8 @@ function M.close()
     M.editor_win = nil
 
 end
+
+
 
 
 
@@ -39,12 +62,15 @@ end
 
 
 
+
+
 function M.open()
 
-    -- если дерево уже есть
+
     if M.tree_win and vim.api.nvim_win_is_valid(M.tree_win) then
         return
     end
+
 
 
     local notes_dir = vim.fn.expand("~/Notes")
@@ -52,7 +78,9 @@ function M.open()
     local files = {}
 
 
+
     local handle = vim.loop.fs_scandir(notes_dir)
+
 
     if handle then
 
@@ -75,14 +103,24 @@ function M.open()
 
 
 
+
+
     local buf = vim.api.nvim_create_buf(false, true)
 
 
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-        " Notes",
-        "",
-        unpack(files)
-    })
+
+    vim.api.nvim_buf_set_lines(
+        buf,
+        0,
+        -1,
+        false,
+        {
+            " Notes",
+            "",
+            unpack(files)
+        }
+    )
+
 
 
     vim.bo[buf].buftype = "nofile"
@@ -91,7 +129,8 @@ function M.open()
 
 
 
-    -- сохраняем окно заметки
+
+
     M.editor_win = vim.api.nvim_get_current_win()
 
 
@@ -104,68 +143,92 @@ function M.open()
 
 
 
-    vim.api.nvim_win_set_buf(M.tree_win, buf)
-
-    vim.api.nvim_win_set_width(M.tree_win, 25)
-
-
-
-    -- обратно в заметку
-    vim.api.nvim_set_current_win(M.editor_win)
+    vim.api.nvim_win_set_buf(
+        M.tree_win,
+        buf
+    )
 
 
 
-    local opts = {
-        buffer = buf,
-        silent = true,
-        nowait = true,
-    }
+    local config = require("ovim.config").options
+
+
+    vim.api.nvim_win_set_width(
+        M.tree_win,
+        config.tree.width
+    )
 
 
 
-    -- открыть файл из дерева
+    vim.api.nvim_set_current_win(
+        M.editor_win
+    )
+
+
+
+
+
     vim.keymap.set("n", "<CR>", function()
+
 
         local file = vim.api.nvim_get_current_line()
 
 
+
         if file:match("%.md$") then
+
 
             if M.editor_win and vim.api.nvim_win_is_valid(M.editor_win) then
 
-                vim.api.nvim_set_current_win(M.editor_win)
+                vim.api.nvim_set_current_win(
+                    M.editor_win
+                )
 
             end
 
 
-            vim.cmd("edit " .. notes_dir .. "/" .. file)
+
+            vim.cmd(
+                "edit " .. notes_dir .. "/" .. file
+            )
 
 
-            -- обновляем окно редактора
+
             M.editor_win = vim.api.nvim_get_current_win()
+
 
         end
 
 
-    end, opts)
+    end, {
+        buffer = buf,
+        silent = true,
+    })
 
 
 
-    -- закрыть дерево
+
+
     vim.keymap.set("n", "q", function()
 
         M.close()
 
-    end, opts)
+    end, {
+        buffer = buf,
+        silent = true,
+    })
+
 
 end
 
 
 
 
+
+
 function M.setup_keys()
 
-    -- Tab дерево ↔ заметка
+
     vim.keymap.set("n", "<Tab>", function()
 
 
@@ -175,16 +238,26 @@ function M.setup_keys()
             local current = vim.api.nvim_get_current_win()
 
 
+
             if current == M.tree_win then
 
+
                 if M.editor_win and vim.api.nvim_win_is_valid(M.editor_win) then
-                    vim.api.nvim_set_current_win(M.editor_win)
+
+                    vim.api.nvim_set_current_win(
+                        M.editor_win
+                    )
+
                 end
 
 
             else
 
-                vim.api.nvim_set_current_win(M.tree_win)
+
+                vim.api.nvim_set_current_win(
+                    M.tree_win
+                )
+
 
             end
 
@@ -193,21 +266,24 @@ function M.setup_keys()
 
 
     end, {
-        silent = true
+        silent = true,
     })
 
 
 
-    -- t открыть/закрыть дерево
+
+
     vim.keymap.set("n", "t", function()
 
         M.toggle()
 
     end, {
-        silent = true
+        silent = true,
     })
 
+
 end
+
 
 
 return M

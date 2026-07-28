@@ -1,14 +1,16 @@
 local M = {}
 
-local picker = require("ovim.picker")
+local config = require("ovim.config").options
 local state = require("ovim.state")
 
 
-M.notes_dir = vim.fn.expand("~/Notes")
+M.notes_dir = vim.fn.expand(config.notes_dir)
 
 
 
 function M.create()
+
+    vim.fn.mkdir(M.notes_dir, "p")
 
 
     vim.ui.input({
@@ -21,11 +23,7 @@ function M.create()
         end
 
 
-        vim.fn.mkdir(M.notes_dir, "p")
-
-
         local file = M.notes_dir .. "/" .. name .. ".md"
-
 
 
         local f = io.open(file, "w")
@@ -37,7 +35,6 @@ function M.create()
                 "---\n" ..
                 "created: " .. os.date("%Y-%m-%d") .. "\n" ..
                 "tags:\n" ..
-                "\n" ..
                 "---\n\n" ..
                 "# " .. name .. "\n\n"
             )
@@ -65,9 +62,7 @@ end
 
 
 
-
 function M.open()
-
 
     local files = {}
 
@@ -88,11 +83,8 @@ function M.open()
 
 
             if type == "file" and name:match("%.md$") then
-
                 table.insert(files, name)
-
             end
-
 
         end
 
@@ -109,8 +101,7 @@ function M.open()
 
 
 
-
-    picker.open(files, function(file)
+    require("ovim.picker").open(files, function(file)
 
 
         state.in_menu = false
@@ -124,12 +115,9 @@ function M.open()
         require("ovim.tree").open()
 
 
-
     end)
 
-
 end
-
 
 
 return M

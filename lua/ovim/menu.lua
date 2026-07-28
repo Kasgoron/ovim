@@ -5,9 +5,8 @@ local state = require("ovim.state")
 
 
 function M.open()
-
+    local config = require("ovim.config").options
     state.in_menu = true
-
 
     vim.cmd("enew")
 
@@ -18,20 +17,22 @@ function M.open()
     vim.bo[buf].buftype = "nofile"
     vim.bo[buf].bufhidden = "wipe"
     vim.bo[buf].swapfile = false
+ 
+local lines = {}
 
 
-    local lines = {
-        "",
-        "              OVIM",
-        "",
-        "        1. New note",
-        "        2. Open note",
-        "        3. Settings",
-        "",
-        "        q. Quit",
-        ""
-    }
+for _, line in ipairs(config.ui.logo) do
+    table.insert(lines, line)
+end
 
+
+table.insert(lines, "")
+table.insert(lines, "        1. New note")
+table.insert(lines, "        2. Open note")
+table.insert(lines, "        3. Settings")
+table.insert(lines, "")
+table.insert(lines, "        q. Quit")
+table.insert(lines, "")
 
     vim.api.nvim_buf_set_lines(
         buf,
@@ -52,8 +53,9 @@ function M.open()
 
     end, {
         buffer = buf,
-        silent = true
+        silent = true,
     })
+
 
 
     vim.keymap.set("n", "2", function()
@@ -62,17 +64,25 @@ function M.open()
 
     end, {
         buffer = buf,
-        silent = true
+        silent = true,
     })
+
 
 
     vim.keymap.set("n", "3", function()
 
-        print("Settings")
+        require("ovim.settings").open()
 
     end, {
         buffer = buf,
-        silent = true
+        silent = true,
+    })
+
+
+
+    vim.keymap.set("n", "q", "<cmd>qa<CR>", {
+        buffer = buf,
+        silent = true,
     })
 
 
