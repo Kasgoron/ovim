@@ -7,3 +7,4 @@ function M.open_menu()
 end
 
 return M
+

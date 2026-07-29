@@ -38,9 +38,18 @@ function M.quit()
         state.open_menu()
     end)
 
+
+vim.cmd("bd!")
+
+
+    state.in_settings = true
+
+
+    vim.schedule(function()
+        state.open_menu()
+    end)
+
 end
-
-
 
 function M.setup()
 
@@ -51,7 +60,6 @@ function M.setup()
         "ц",
         "Ц",
     }
-
 
     local quit_keys = {
         "q",

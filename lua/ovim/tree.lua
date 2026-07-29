@@ -8,19 +8,14 @@ M.editor_win = nil
 
 
 function M.update_width()
-
     local config = require("ovim.config").options
-
-
     if M.tree_win and vim.api.nvim_win_is_valid(M.tree_win) then
-
+        vim.wo[M.tree_win].winfixwidth = true
         vim.api.nvim_win_set_width(
             M.tree_win,
             config.tree.width
         )
-
     end
-
 end
 
 
@@ -82,7 +77,7 @@ function M.open()
     local handle = vim.loop.fs_scandir(notes_dir)
 
 
-    if handle then
+        if handle then
 
         while true do
 
@@ -157,6 +152,7 @@ function M.open()
         M.tree_win,
         config.tree.width
     )
+    vim.wo[M.tree_win].winfixwidth = true
 
 
 

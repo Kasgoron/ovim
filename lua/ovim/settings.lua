@@ -55,10 +55,6 @@ function M.open()
 
             "",
 
-            "              Settings",
-
-            "",
-
         }
 
 
@@ -117,7 +113,6 @@ function M.open()
         table.insert(lines, "q. Back")
 
 
-
         vim.bo[buf].modifiable = true
 
 
@@ -134,7 +129,7 @@ function M.open()
 
 
 
-        local cursor_line = 4
+        local cursor_line = 2
 
 
         for i = 1, selected - 1 do
@@ -197,21 +192,6 @@ function M.open()
     end
 
 
-
-
-
-    vim.keymap.set("n", "j", next_item, {
-        buffer = buf,
-        silent = true,
-    })
-
-
-    vim.keymap.set("n", "k", prev_item, {
-        buffer = buf,
-        silent = true,
-    })
-
-
     vim.keymap.set("n", "<Down>", next_item, {
         buffer = buf,
         silent = true,
@@ -224,7 +204,16 @@ function M.open()
     })
 
 
+    vim.keymap.set("n", "j", next_item, {
+        buffer = buf,
+        silent = true,
+    })
 
+
+    vim.keymap.set("n", "k", prev_item, {
+        buffer = buf,
+        silent = true,
+    })
 
 
 
@@ -329,9 +318,17 @@ function M.open()
     })
 
 
+    vim.keymap.set("n", "й", function()
+
+        require("ovim.config").reload()
+
+        require("ovim.menu").open()
 
 
-
+    end, {
+        buffer = buf,
+        silent = true,
+    })
 
 
     vim.keymap.set("n", "q", function()

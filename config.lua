@@ -7,7 +7,7 @@ return {
     },
 
     tree = {
-        width = 25,
+        width = 15,
     },
 
 }
