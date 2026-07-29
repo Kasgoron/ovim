@@ -60,50 +60,28 @@ end
 
 
 function M.open()
-
-
     if M.tree_win and vim.api.nvim_win_is_valid(M.tree_win) then
         return
     end
 
-
-
-    local notes_dir = vim.fn.expand("~/Notes")
+    local config = require("ovim.config").options
+    local notes_dir = vim.fn.expand(config.notes_dir or "~/Notes")
 
     local files = {}
-
-
-
     local handle = vim.loop.fs_scandir(notes_dir)
-
-
-        if handle then
-
+    if handle then
         while true do
-
             local name, type = vim.loop.fs_scandir_next(handle)
-
             if not name then
                 break
             end
-
-
             if type == "file" and name:match("%.md$") then
                 table.insert(files, name)
             end
-
         end
-
     end
 
-
-
-
-
     local buf = vim.api.nvim_create_buf(false, true)
-
-
-
     vim.api.nvim_buf_set_lines(
         buf,
         0,
@@ -115,106 +93,50 @@ function M.open()
             unpack(files)
         }
     )
-
-
-
     vim.bo[buf].buftype = "nofile"
     vim.bo[buf].bufhidden = "wipe"
     vim.bo[buf].swapfile = false
 
-
-
-
-
     M.editor_win = vim.api.nvim_get_current_win()
-
-
-
     vim.cmd("leftabove vsplit")
-
-
-
     M.tree_win = vim.api.nvim_get_current_win()
-
-
-
     vim.api.nvim_win_set_buf(
         M.tree_win,
         buf
     )
-
-
-
-    local config = require("ovim.config").options
-
-
     vim.api.nvim_win_set_width(
         M.tree_win,
         config.tree.width
     )
     vim.wo[M.tree_win].winfixwidth = true
-
-
-
     vim.api.nvim_set_current_win(
         M.editor_win
     )
 
-
-
-
-
     vim.keymap.set("n", "<CR>", function()
-
-
         local file = vim.api.nvim_get_current_line()
-
-
-
         if file:match("%.md$") then
-
-
             if M.editor_win and vim.api.nvim_win_is_valid(M.editor_win) then
-
                 vim.api.nvim_set_current_win(
                     M.editor_win
                 )
-
             end
-
-
-
             vim.cmd(
                 "edit " .. notes_dir .. "/" .. file
             )
-
-
-
             M.editor_win = vim.api.nvim_get_current_win()
-
-
         end
-
-
     end, {
         buffer = buf,
         silent = true,
     })
-
-
-
-
 
     vim.keymap.set("n", "q", function()
-
         M.close()
-
     end, {
         buffer = buf,
         silent = true,
     })
-
-
 end
 
 

@@ -1,33 +1,36 @@
 local M = {}
 
-local config = require("ovim.config").options
 local state = require("ovim.state")
 
 
-M.notes_dir = vim.fn.expand(config.notes_dir)
+local function get_notes_dir()
 
+    local path = vim.fn.stdpath("config") .. "/config.lua"
+
+    local config = dofile(path)
+
+    return vim.fn.expand(config.notes_dir)
+
+end
 
 
 function M.create()
 
-    vim.fn.mkdir(M.notes_dir, "p")
+    local notes_dir = get_notes_dir()
 
+    vim.fn.mkdir(notes_dir, "p")
 
     vim.ui.input({
         prompt = "Note name: ",
     }, function(name)
 
-
         if not name or name == "" then
             return
         end
 
-
-        local file = M.notes_dir .. "/" .. name .. ".md"
-
+        local file = notes_dir .. "/" .. name .. ".md"
 
         local f = io.open(file, "w")
-
 
         if f then
 
@@ -39,36 +42,28 @@ function M.create()
                 "# " .. name .. "\n\n"
             )
 
-
             f:close()
 
         end
 
-
-
         state.in_menu = false
 
-
-        vim.cmd("edit " .. file)
-
+        vim.cmd.edit(vim.fn.fnameescape(file))
 
         require("ovim.tree").open()
-
 
     end)
 
 end
 
 
-
-
 function M.open()
+
+    local notes_dir = get_notes_dir()
 
     local files = {}
 
-
-    local handle = vim.loop.fs_scandir(M.notes_dir)
-
+    local handle = vim.loop.fs_scandir(notes_dir)
 
     if handle then
 
@@ -76,11 +71,9 @@ function M.open()
 
             local name, type = vim.loop.fs_scandir_next(handle)
 
-
             if not name then
                 break
             end
-
 
             if type == "file" and name:match("%.md$") then
                 table.insert(files, name)
@@ -91,29 +84,21 @@ function M.open()
     end
 
 
-
     if #files == 0 then
-
         print("No notes found")
         return
-
     end
-
 
 
     require("ovim.picker").open(files, function(file)
 
-
         state.in_menu = false
 
+        local path = notes_dir .. "/" .. file
 
-        vim.cmd(
-            "edit " .. M.notes_dir .. "/" .. file
-        )
-
+        vim.cmd.edit(vim.fn.fnameescape(path))
 
         require("ovim.tree").open()
-
 
     end)
 
