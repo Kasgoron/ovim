@@ -36,21 +36,6 @@ local function replace(pattern, value)
 end
 
 
-
-
-
-function M.title(value)
-
-    replace(
-        'title = ".-"',
-        'title = "' .. value .. '"'
-    )
-
-end
-
-
-
-
 function M.notes_dir(value)
 
     replace(
@@ -61,8 +46,6 @@ function M.notes_dir(value)
 end
 
 
-
-
 function M.tree_width(value)
 
     replace(
@@ -71,7 +54,6 @@ function M.tree_width(value)
     )
 
 end
-
 
 
 return M

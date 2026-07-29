@@ -4,8 +4,6 @@ return {
 
     ui = {
 
-        title = "OVIM",
-
         logo = {
 	    "					    ",	
 	    "					    ",

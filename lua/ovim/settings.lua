@@ -26,7 +26,6 @@ function M.open()
 
 
     local items = {
-        "Change title",
         "Change notes folder",
         "Change tree width",
         "Edit logo",
@@ -81,7 +80,7 @@ function M.open()
 
                 table.insert(
                     lines,
-                    "    " .. config.ui.title
+                    "    " .. config.notes_dir
                 )
 
 
@@ -89,19 +88,9 @@ function M.open()
 
                 table.insert(
                     lines,
-                    "    " .. config.notes_dir
-                )
-
-
-            elseif i == 3 then
-
-                table.insert(
-                    lines,
                     "    " .. config.tree.width
                 )
-
-            end
-
+	end
 
 
             table.insert(lines, "")
@@ -228,21 +217,15 @@ function M.open()
 
 
             vim.ui.input({
-                prompt = "New title: ",
-                default = config.ui.title,
+                prompt = "New dir: ",
+                default = config.notes_dir,
             }, function(value)
 
-
-                if value then
-
-                    edit.title(value)
-
+		    if value then
+                    edit.notes_dir(value)
                     reload_config()
-
                     redraw()
-
                 end
-
 
             end)
 
@@ -250,31 +233,6 @@ function M.open()
 
 
         elseif selected == 2 then
-
-
-            vim.ui.input({
-                prompt = "Notes folder: ",
-                default = config.notes_dir,
-            }, function(value)
-
-
-                if value then
-
-                    edit.notes_dir(value)
-
-                    reload_config()
-
-                    redraw()
-
-                end
-
-
-            end)
-
-
-
-
-        elseif selected == 3 then
 
 
             vim.ui.input({
@@ -301,7 +259,7 @@ function M.open()
 
 
 
-        elseif selected == 4 then
+        elseif selected == 3 then
 
 
             vim.cmd(
